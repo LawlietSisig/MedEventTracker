@@ -131,7 +131,6 @@ $flash = getFlash();
                     <button type="submit" class="btn-primary" id="login-btn">
                         <span>
                             <span class="btn-text">Sign In</span>
-                            <span class="btn-spinner"></span>
                         </span>
                     </button>
                 </form>

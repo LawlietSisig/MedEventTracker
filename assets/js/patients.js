@@ -135,7 +135,6 @@ if (form) {
             return;
         }
         const btn = document.getElementById('modal-submit-btn');
-        btn.classList.add('loading');
         btn.disabled = true;
     });
 

@@ -125,7 +125,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
 
-            registerBtn.classList.add('loading');
             registerBtn.disabled = true;
         });
     }

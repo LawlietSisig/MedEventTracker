@@ -437,7 +437,6 @@ function canAdmin(array $user): bool {
                 <button type="button" class="btn-outline" onclick="closeModal()">Cancel</button>
                 <button type="submit" class="btn-primary btn-modal-submit" id="modal-submit-btn">
                     <span class="btn-text">Create Event</span>
-                    <span class="btn-spinner"></span>
                 </button>
             </div>
         </form>

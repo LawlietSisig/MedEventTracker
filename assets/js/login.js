@@ -41,7 +41,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
 
-            loginBtn.classList.add('loading');
             loginBtn.disabled = true;
         });
     }

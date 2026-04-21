@@ -344,7 +344,6 @@ function getAge(string $dob): string {
                     <button type="button" class="btn-outline" onclick="closeModal()">Cancel</button>
                     <button type="submit" class="btn-primary btn-modal-submit" id="modal-submit-btn">
                         <span class="btn-text">Register Patient</span>
-                        <span class="btn-spinner"></span>
                     </button>
                 </div>
             </form>

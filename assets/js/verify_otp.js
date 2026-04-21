@@ -38,7 +38,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     otpInput.classList.add('otp-box-error');
                     return;
                 }
-                verifyBtn.classList.add('loading');
                 verifyBtn.disabled = true;
             });
         }

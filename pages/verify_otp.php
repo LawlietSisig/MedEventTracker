@@ -134,7 +134,6 @@ $flash = getFlash();
                     <button type="submit" class="btn-primary" id="verify-btn">
                         <span>
                             <span class="btn-text">Verify Email</span>
-                            <span class="btn-spinner"></span>
                         </span>
                     </button>
                 </form>

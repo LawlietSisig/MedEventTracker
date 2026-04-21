@@ -221,7 +221,6 @@ $flash = getFlash();
                     <button type="submit" class="btn-primary" id="register-btn" style="margin-top: 0.5rem;">
                         <span>
                             <span class="btn-text">Create Account</span>
-                            <span class="btn-spinner"></span>
                         </span>
                     </button>
                 </form>

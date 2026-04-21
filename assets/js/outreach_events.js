@@ -179,7 +179,6 @@ document.getElementById('event-form').addEventListener('submit', function (e) {
         return;
     }
     const btn = document.getElementById('modal-submit-btn');
-    btn.classList.add('loading');
     btn.disabled = true;
 });
 
