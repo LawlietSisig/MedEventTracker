@@ -14,9 +14,10 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 }
 
 // ── Collect & sanitise inputs ────────────────────────────────
-$firstName = trim(strip_tags($_POST['first_name'] ?? ''));
-$lastName  = trim(strip_tags($_POST['last_name']  ?? ''));
-$email     = filter_input(INPUT_POST, 'email', FILTER_SANITIZE_EMAIL);
+$firstName  = trim(strip_tags($_POST['first_name'] ?? ''));
+$middleName = trim(strip_tags($_POST['middle_name'] ?? ''));
+$lastName   = trim(strip_tags($_POST['last_name']  ?? ''));
+$email      = filter_input(INPUT_POST, 'email', FILTER_SANITIZE_EMAIL);
 $role      = $_POST['role']             ?? '';
 $password  = $_POST['password']         ?? '';
 $confirm   = $_POST['confirm_password'] ?? '';
@@ -81,6 +82,7 @@ $stmt->close();
 $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
 $formData = json_encode([
     'first_name'      => $firstName,
+    'middle_name'     => $middleName,
     'last_name'       => $lastName,
     'email'           => $email,
     'hashed_password' => $hashedPassword,

@@ -15,7 +15,7 @@ $flash = getFlash();
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Create your Medical Outreach Tracker account and start managing community health programs.">
     <title>Sign Up — Medical Outreach Tracker</title>
-    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="assets/css/style.css?v=<?php echo time(); ?>">
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏥</text></svg>">
 </head>
 <body>
@@ -90,37 +90,49 @@ $flash = getFlash();
                 <?php endif; ?>
 
                 <form action="handlers/register_handler.php" method="POST" id="register-form" novalidate>
-                    <!-- Name row -->
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label class="form-label" for="first_name">First Name</label>
-                            <div class="input-wrapper">
-                                <span class="input-icon">
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
-                                    </svg>
-                                </span>
-                                <input type="text" class="form-input" id="first_name" name="first_name"
-                                    placeholder="First name" required autocomplete="given-name"
-                                    value="<?php echo htmlspecialchars($_GET['first_name'] ?? ''); ?>">
-                            </div>
-                            <span class="field-error" id="first_name-error"></span>
+                    <!-- Name fields -->
+                    <div class="form-group">
+                        <label class="form-label" for="first_name">First Name</label>
+                        <div class="input-wrapper">
+                            <span class="input-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
+                                </svg>
+                            </span>
+                            <input type="text" class="form-input" id="first_name" name="first_name"
+                                placeholder="First name" required autocomplete="given-name"
+                                value="<?php echo htmlspecialchars($_GET['first_name'] ?? ''); ?>">
                         </div>
+                        <span class="field-error" id="first_name-error"></span>
+                    </div>
 
-                        <div class="form-group">
-                            <label class="form-label" for="last_name">Last Name</label>
-                            <div class="input-wrapper">
-                                <span class="input-icon">
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
-                                    </svg>
-                                </span>
-                                <input type="text" class="form-input" id="last_name" name="last_name"
-                                    placeholder="Last name" required autocomplete="family-name"
-                                    value="<?php echo htmlspecialchars($_GET['last_name'] ?? ''); ?>">
-                            </div>
-                            <span class="field-error" id="last_name-error"></span>
+                    <div class="form-group">
+                        <label class="form-label" for="middle_name">Middle Name <span style="font-weight: normal; color: var(--text-tertiary);">(Optional)</span></label>
+                        <div class="input-wrapper">
+                            <span class="input-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
+                                </svg>
+                            </span>
+                            <input type="text" class="form-input" id="middle_name" name="middle_name"
+                                placeholder="Middle name" autocomplete="additional-name"
+                                value="<?php echo htmlspecialchars($_GET['middle_name'] ?? ''); ?>">
                         </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="last_name">Last Name</label>
+                        <div class="input-wrapper">
+                            <span class="input-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
+                                </svg>
+                            </span>
+                            <input type="text" class="form-input" id="last_name" name="last_name"
+                                placeholder="Last name" required autocomplete="family-name"
+                                value="<?php echo htmlspecialchars($_GET['last_name'] ?? ''); ?>">
+                        </div>
+                        <span class="field-error" id="last_name-error"></span>
                     </div>
 
                     <!-- Email -->

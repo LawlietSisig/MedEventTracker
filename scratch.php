@@ -1,14 +1,20 @@
 <?php
 require_once __DIR__ . '/config/database.php';
+
 $conn = getConnection();
-$result = $conn->query("SHOW TABLES LIKE 'volunteers'");
-if ($result->num_rows > 0) {
-    echo "volunteers table exists:\n";
-    $cols = $conn->query("SHOW COLUMNS FROM volunteers");
-    while ($row = $cols->fetch_assoc()) {
-        echo $row['Field'] . " - " . $row['Type'] . "\n";
-    }
+
+// Check if middle_name column exists
+$result = $conn->query("SHOW COLUMNS FROM users LIKE 'middle_name'");
+if ($result->num_rows == 0) {
+    // Add middle_name column
+    $conn->query("ALTER TABLE users ADD COLUMN middle_name VARCHAR(100) NULL AFTER first_name");
+    echo "Added middle_name column to users table.\n";
 } else {
-    echo "volunteers table does NOT exist.\n";
+    echo "middle_name column already exists in users table.\n";
 }
-$conn->close();
+
+// Describe the table
+$res = $conn->query("DESCRIBE users");
+while ($row = $res->fetch_assoc()) {
+    echo $row['Field'] . " - " . $row['Type'] . "\n";
+}

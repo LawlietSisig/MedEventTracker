@@ -387,20 +387,22 @@ function canAdmin(array $user): bool {
                     <label class="form-label" for="f-description">Description</label>
                     <textarea class="form-input form-textarea modal-input" id="f-description" name="description" placeholder="Brief description of this event…" rows="3"></textarea>
                 </div>
-                <div class="form-group">
-                    <label class="form-label" for="f-location">Location <span class="req">*</span></label>
-                    <div class="input-wrapper">
-                        <span class="input-icon">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0ZM19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z"/></svg>
-                        </span>
-                        <input type="text" class="form-input" id="f-location" name="location" placeholder="City / Barangay / Venue" required maxlength="255">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label" for="f-barangay-city">Barangay, City <span class="req">*</span></label>
+                        <input type="text" class="form-input modal-input" id="f-barangay-city" name="barangay_city" placeholder="e.g. Tetuan, Zamboanga City" required maxlength="150">
+                        <span class="field-error" id="err-barangay-city"></span>
                     </div>
-                    <span class="field-error" id="err-location"></span>
+                    <div class="form-group">
+                        <label class="form-label" for="f-venue">Venue <span class="req">*</span></label>
+                        <input type="text" class="form-input modal-input" id="f-venue" name="venue" placeholder="e.g. Covered Court" required maxlength="100">
+                        <span class="field-error" id="err-venue"></span>
+                    </div>
                 </div>
                 <div class="form-row">
                     <div class="form-group">
                         <label class="form-label" for="f-date">Event Date <span class="req">*</span></label>
-                        <input type="date" class="form-input modal-input" id="f-date" name="event_date" required>
+                        <input type="date" class="form-input modal-input" id="f-date" name="event_date" required max="9999-12-31">
                         <span class="field-error" id="err-date"></span>
                     </div>
                     <div class="form-group">
@@ -468,6 +470,6 @@ function canAdmin(array $user): bool {
     </div>
 </div>
 
-<script src="../assets/js/outreach_events.js"></script>
+<script src="../assets/js/outreach_events.js?v=<?php echo time(); ?>"></script>
 </body>
 </html>

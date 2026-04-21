@@ -31,7 +31,17 @@ function sanitiseEvent(array $post): array|false
 {
     $title      = trim($post['title'] ?? '');
     $desc       = trim($post['description'] ?? '');
+    $barangayCity = trim($post['barangay_city'] ?? '');
+    $venue      = trim($post['venue'] ?? '');
     $location   = trim($post['location'] ?? '');
+
+    if ($barangayCity && $venue) {
+        $location = $barangayCity . ' | ' . $venue;
+    } elseif ($barangayCity) {
+        $location = $barangayCity;
+    } elseif ($venue) {
+        $location = $venue;
+    }
     $eventDate  = trim($post['event_date'] ?? '');
     $startTime  = trim($post['start_time'] ?? '');
     $endTime    = trim($post['end_time'] ?? '');
@@ -52,22 +62,6 @@ function sanitiseEvent(array $post): array|false
     return compact('title', 'desc', 'location', 'eventDate', 'startTime', 'endTime', 'status', 'maxVols');
 }
 
-// ── Helper: nullable bind_param for max_volunteers ─────────────────────────────
-function bindNullableEvent(mysqli_stmt $stmt, string $typePrefix, array $data, int $lastInt): void
-{
-    // We use PHP 8.1+ execute([]) style for clean NULL support
-    $stmt->execute([
-        $data['title'],
-        $data['desc'],
-        $data['location'],
-        $data['eventDate'],
-        $data['startTime'],
-        $data['endTime'],
-        $data['status'],
-        $data['maxVols'],   // null-safe
-        $lastInt,
-    ]);
-}
 
 // ── CREATE ────────────────────────────────────────────────────────────────────
 if ($action === 'create') {
@@ -78,17 +72,27 @@ if ($action === 'create') {
         exit();
     }
 
+    $today = date('Y-m-d');
+    if ($data['eventDate'] < $today) {
+        setFlash('error', 'Event date must be today or in the future.');
+        header("Location: {$redirect}");
+        exit();
+    }
+
     $stmt = $conn->prepare(
         "INSERT INTO outreach_events
          (title, description, location, event_date, start_time, end_time, status, max_volunteers, created_by)
          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)"
     );
 
-    if ($stmt->execute([
+    $stmt->bind_param(
+        "sssssssii",
         $data['title'], $data['desc'], $data['location'],
         $data['eventDate'], $data['startTime'], $data['endTime'],
-        $data['status'], $data['maxVols'], $user['id'],
-    ])) {
+        $data['status'], $data['maxVols'], $user['id']
+    );
+
+    if ($stmt->execute()) {
         setFlash('success', 'Event "' . htmlspecialchars($data['title']) . '" created successfully!');
     } else {
         setFlash('error', 'Failed to create event. Please try again.');
@@ -124,11 +128,14 @@ if ($action === 'create') {
          WHERE id=?"
     );
 
-    if ($stmt->execute([
+    $stmt->bind_param(
+        "sssssssii",
         $data['title'], $data['desc'], $data['location'],
         $data['eventDate'], $data['startTime'], $data['endTime'],
-        $data['status'], $data['maxVols'], $eventId,
-    ])) {
+        $data['status'], $data['maxVols'], $eventId
+    );
+
+    if ($stmt->execute()) {
         setFlash('success', 'Event "' . htmlspecialchars($data['title']) . '" updated successfully!');
     } else {
         setFlash('error', 'Failed to update event. Please try again.');

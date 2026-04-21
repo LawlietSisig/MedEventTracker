@@ -129,11 +129,12 @@ $check->close();
 
 // Insert the user
 $ins = $conn->prepare(
-    "INSERT INTO users (first_name, last_name, email, password, role) VALUES (?, ?, ?, ?, ?)"
+    "INSERT INTO users (first_name, middle_name, last_name, email, password, role) VALUES (?, ?, ?, ?, ?, ?)"
 );
 $ins->bind_param(
-    "sssss",
+    "ssssss",
     $formData['first_name'],
+    $formData['middle_name'] ?? null,
     $formData['last_name'],
     $formData['email'],
     $formData['hashed_password'],

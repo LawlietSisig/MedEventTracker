@@ -28,7 +28,15 @@ function openEditModal(ev) {
 
     document.getElementById('f-title').value       = ev.title        ?? '';
     document.getElementById('f-description').value = ev.description  ?? '';
-    document.getElementById('f-location').value    = ev.location     ?? '';
+    let bCity = ev.location ?? '';
+    let venueStr = '';
+    if (bCity.includes(' | ')) {
+        const parts = bCity.split(' | ');
+        bCity = parts[0];
+        venueStr = parts.slice(1).join(' | ');
+    }
+    document.getElementById('f-barangay-city').value = bCity;
+    document.getElementById('f-venue').value = venueStr;
     document.getElementById('f-date').value        = ev.event_date   ?? '';
     document.getElementById('f-start').value       = (ev.start_time  ?? '').slice(0, 5);
     document.getElementById('f-end').value         = (ev.end_time    ?? '').slice(0, 5);
@@ -98,7 +106,8 @@ function validateForm() {
     let valid = true;
 
     const title     = document.getElementById('f-title').value.trim();
-    const location  = document.getElementById('f-location').value.trim();
+    const bCity     = document.getElementById('f-barangay-city').value.trim();
+    const venueStr  = document.getElementById('f-venue').value.trim();
     const date      = document.getElementById('f-date').value;
     const start     = document.getElementById('f-start').value;
     const end       = document.getElementById('f-end').value;
@@ -112,14 +121,32 @@ function validateForm() {
         valid = false;
     }
 
-    if (!location) {
-        showFieldError('f-location', 'Location is required.');
+    if (!bCity) {
+        showFieldError('f-barangay-city', 'Barangay, City is required.');
+        valid = false;
+    }
+    if (!venueStr) {
+        showFieldError('f-venue', 'Venue is required.');
         valid = false;
     }
 
     if (!date) {
         showFieldError('f-date', 'Event date is required.');
         valid = false;
+    } else {
+        const action = document.getElementById('form-action').value;
+        if (action === 'create') {
+            const today = new Date();
+            today.setHours(0, 0, 0, 0); // normalize today to midnight
+            const [y, m, d] = date.split('-');
+            const selectedDate = new Date(y, m - 1, d); // local time
+            selectedDate.setHours(0, 0, 0, 0);
+            
+            if (selectedDate < today) {
+                showFieldError('f-date', 'Event date must be today or in the future.');
+                valid = false;
+            }
+        }
     }
 
     if (!start) {
@@ -157,7 +184,7 @@ document.getElementById('event-form').addEventListener('submit', function (e) {
 });
 
 /* Clear individual field errors on input */
-['f-title', 'f-description', 'f-location', 'f-date', 'f-start', 'f-end', 'f-status', 'f-volunteers'].forEach(id => {
+['f-title', 'f-description', 'f-barangay-city', 'f-venue', 'f-date', 'f-start', 'f-end', 'f-status', 'f-volunteers'].forEach(id => {
     const el = document.getElementById(id);
     if (el) {
         el.addEventListener('input', () => {
@@ -173,6 +200,39 @@ document.getElementById('event-form').addEventListener('submit', function (e) {
             if (errEl) errEl.textContent = '';
         });
     }
+});
+
+/* ── Auto-update status based on date/time ──────────────────────────────────── */
+function autoUpdateStatus() {
+    const statusSelect = document.getElementById('f-status');
+    if (!statusSelect || statusSelect.value === 'cancelled') return;
+
+    const dateVal = document.getElementById('f-date').value;
+    const startVal = document.getElementById('f-start').value;
+    const endVal = document.getElementById('f-end').value;
+
+    if (!dateVal || !startVal || !endVal) return;
+
+    const [y, m, d] = dateVal.split('-');
+    const [startH, startMin] = startVal.split(':');
+    const [endH, endMin] = endVal.split(':');
+
+    const now = new Date();
+    const startTime = new Date(y, m - 1, d, startH, startMin, 0);
+    const endTime = new Date(y, m - 1, d, endH, endMin, 0);
+
+    if (now < startTime) {
+        statusSelect.value = 'upcoming';
+    } else if (now >= startTime && now <= endTime) {
+        statusSelect.value = 'ongoing';
+    } else {
+        statusSelect.value = 'completed';
+    }
+}
+
+['f-date', 'f-start', 'f-end'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.addEventListener('change', autoUpdateStatus);
 });
 
 /* ── Live search debounce ───────────────────────────────────────────────────── */

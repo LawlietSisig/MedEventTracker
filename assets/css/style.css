@@ -547,7 +547,7 @@ img {
     transform: translateY(0);
 }
 
-.btn-primary span {
+.btn-primary > span {
     position: relative;
     z-index: 1;
     display: flex;
