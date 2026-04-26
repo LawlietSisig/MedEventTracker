@@ -13,30 +13,62 @@ $initials = strtoupper(substr($user['first_name'], 0, 1) . substr($user['last_na
 $flash   = getFlash();
 
 // ── Fetch Volunteers ─────────────────────────────────────────────────────────────
+// Combines: (1) manually-added volunteers table, (2) registered users with role='volunteer'
 $conn   = getConnection();
 $search = trim($_GET['search'] ?? '');
 
-$where  = ['1=1'];
-$params = [];
-$types  = '';
+$likePart = '';
+$params   = [];
+$types    = '';
 
 if ($search !== '') {
-    $where[]  = '(v.first_name LIKE ? OR v.last_name LIKE ? OR v.profession LIKE ?)';
     $like     = "%{$search}%";
-    $params[] = $like;
-    $params[] = $like;
-    $params[] = $like;
-    $types   .= 'sss';
+    $likePart = "AND (first_name LIKE ? OR last_name LIKE ? OR profession LIKE ?)";
+    $params   = [$like, $like, $like, $like, $like, $like];
+    $types    = 'ssssss';
 }
 
-$whereSQL = implode(' AND ', $where);
-$sql = "SELECT v.*, CONCAT(u.first_name,' ',u.last_name) AS created_by_name
-        FROM volunteers v
-        LEFT JOIN users u ON u.id = v.created_by
-        WHERE {$whereSQL}
-        ORDER BY v.last_name ASC, v.first_name ASC";
+// Pull from volunteers table
+$sql = "
+    SELECT
+        v.id,
+        v.first_name,
+        v.last_name,
+        v.email,
+        v.contact_number,
+        v.profession,
+        v.status,
+        v.skills_notes,
+        v.created_at,
+        CONCAT(u.first_name,' ',u.last_name) AS created_by_name,
+        'manual' AS source
+    FROM volunteers v
+    LEFT JOIN users u ON u.id = v.created_by
+    WHERE 1=1 {$likePart}
 
-$stmt   = $conn->prepare($sql);
+    UNION ALL
+
+    SELECT
+        u2.id,
+        u2.first_name,
+        u2.last_name,
+        u2.email,
+        NULL            AS contact_number,
+        'Volunteer'     AS profession,
+        IF(COALESCE(u2.is_active, 1) = 1, 'active', 'inactive') AS status,
+        NULL            AS skills_notes,
+        u2.created_at,
+        'Registered'    AS created_by_name,
+        'user'          AS source
+    FROM users u2
+    WHERE u2.role = 'volunteer'
+    AND u2.email NOT IN (SELECT v3.email FROM volunteers v3)
+    " . ($search !== '' ? "AND (u2.first_name LIKE ? OR u2.last_name LIKE ? OR 'Volunteer' LIKE ?)" : '') . "
+
+    ORDER BY last_name ASC, first_name ASC
+";
+
+$stmt = $conn->prepare($sql);
 if ($params) $stmt->bind_param($types, ...$params);
 $stmt->execute();
 $volunteers = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);

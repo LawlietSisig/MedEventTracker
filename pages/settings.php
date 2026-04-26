@@ -141,12 +141,15 @@ $flash = getFlash();
                     <!-- Profile Card -->
                     <div class="settings-card">
                         <div class="settings-card-header">
-                            <h3>Profile Information</h3>
-                            <p>Update your personal details and public profile picture.</p>
+                                <h3>Profile Information</h3>
+                                <p>Update your personal details and profile picture.</p>
+                            </div>
                         </div>
                         <div class="settings-card-body">
                             <form action="../handlers/settings_profile_handler.php" method="POST" enctype="multipart/form-data">
-                                <div class="avatar-upload-group">
+
+                                <!-- Avatar -->
+                                <div class="avatar-upload-group" style="margin-bottom:var(--space-6);">
                                     <div class="avatar-preview-container">
                                         <?php if (!empty($user['avatar'])): ?>
                                             <img src="../<?php echo htmlspecialchars($user['avatar']); ?>" id="avatar-preview" class="avatar-preview-image" alt="Profile avatar">
@@ -154,83 +157,154 @@ $flash = getFlash();
                                             <div id="avatar-preview" class="avatar-preview-initials"><?php echo $initials; ?></div>
                                         <?php endif; ?>
                                         <div class="avatar-overlay">
-                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                                                <path stroke-linecap="round" stroke-linejoin="round" d="M6.827 6.175A2.31 2.31 0 0 1 5.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 0 0 2.25 2.25h15A2.25 2.25 0 0 0 21.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 0 0-1.134-.175 2.31 2.31 0 0 1-1.64-1.055l-.822-1.316a2.192 2.192 0 0 0-1.736-1.039 48.774 48.774 0 0 0-5.232 0 2.192 2.192 0 0 0-1.736 1.039l-.821 1.316Z" />
-                                                <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 12.75a4.5 4.5 0 1 1-9 0 4.5 4.5 0 0 1 9 0ZM18.75 10.5h.008v.008h-.008V10.5Z" />
-                                            </svg>
+                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6.827 6.175A2.31 2.31 0 0 1 5.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 0 0 2.25 2.25h15A2.25 2.25 0 0 0 21.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 0 0-1.134-.175 2.31 2.31 0 0 1-1.64-1.055l-.822-1.316a2.192 2.192 0 0 0-1.736-1.039 48.774 48.774 0 0 0-5.232 0 2.192 2.192 0 0 0-1.736 1.039l-.821 1.316Z" /><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 12.75a4.5 4.5 0 1 1-9 0 4.5 4.5 0 0 1 9 0ZM18.75 10.5h.008v.008h-.008V10.5Z" /></svg>
                                         </div>
-                                        <input type="file" name="avatar" id="avatar-input" accept="image/jpeg, image/png, image/webp" class="hidden-file-input">
+                                        <input type="file" name="avatar" id="avatar-input" accept="image/jpeg,image/png,image/webp" class="hidden-file-input">
                                     </div>
                                     <div class="avatar-info">
-                                        <label for="avatar-input" class="btn-outline btn-sm">Change picture</label>
-                                        <span class="help-text">JPG, PNG or WebP. Max 2MB.</span>
+                                        <label for="avatar-input" class="btn-outline btn-sm" style="cursor:pointer; display:inline-flex; align-items:center; gap:6px;">
+                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" style="width:14px;height:14px;"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5m-13.5-9L12 3m0 0 4.5 4.5M12 3v13.5" /></svg>
+                                            Upload Photo
+                                        </label>
+                                        <span class="help-text">JPG, PNG or WebP · Max 2MB</span>
                                     </div>
                                 </div>
 
+                                <!-- Name row -->
                                 <div class="form-row">
                                     <div class="form-group">
-                                        <label for="first_name">First Name</label>
-                                        <input type="text" id="first_name" name="first_name" value="<?php echo htmlspecialchars($user['first_name']); ?>" required>
+                                        <label class="form-label" for="first_name">First Name</label>
+                                        <div class="input-wrapper">
+                                            <span class="input-icon">
+                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" /></svg>
+                                            </span>
+                                            <input type="text" class="form-input" id="first_name" name="first_name"
+                                                   value="<?php echo htmlspecialchars($user['first_name']); ?>" required>
+                                        </div>
                                     </div>
                                     <div class="form-group">
-                                        <label for="last_name">Last Name</label>
-                                        <input type="text" id="last_name" name="last_name" value="<?php echo htmlspecialchars($user['last_name']); ?>" required>
+                                        <label class="form-label" for="last_name">Last Name</label>
+                                        <div class="input-wrapper">
+                                            <span class="input-icon">
+                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" /></svg>
+                                            </span>
+                                            <input type="text" class="form-input" id="last_name" name="last_name"
+                                                   value="<?php echo htmlspecialchars($user['last_name']); ?>" required>
+                                        </div>
                                     </div>
                                 </div>
 
+                                <!-- Email -->
                                 <div class="form-group">
-                                    <label for="email">Email Address</label>
-                                    <input type="email" id="email" name="email" value="<?php echo htmlspecialchars($user['email']); ?>" required>
+                                    <label class="form-label" for="email">Email Address</label>
+                                    <div class="input-wrapper">
+                                        <span class="input-icon">
+                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75" /></svg>
+                                        </span>
+                                        <input type="email" class="form-input" id="email" name="email"
+                                               value="<?php echo htmlspecialchars($user['email']); ?>" required>
+                                    </div>
                                 </div>
 
-                                <button type="submit" class="btn-primary" style="margin-top: var(--space-4);">Save Profile</button>
+                                <!-- Role (read-only) -->
+                                <div class="form-group">
+                                    <label class="form-label">Role</label>
+                                    <div style="display:inline-flex; align-items:center; gap:8px; padding:var(--space-3) var(--space-4); background:var(--slate-50); border:1.5px solid var(--slate-200); border-radius:var(--radius-md); font-size:0.9rem; color:var(--slate-600);">
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" style="width:16px;height:16px;color:var(--slate-400);"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75m-3-7.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285Z" /></svg>
+                                        <?php echo htmlspecialchars(ucfirst($user['role'])); ?>
+                                        <span style="font-size:0.72rem; color:var(--slate-400); margin-left:4px;">(cannot be changed here)</span>
+                                    </div>
+                                </div>
+
+                                <div style="border-top:1px solid var(--slate-100); margin-top:var(--space-6); padding-top:var(--space-5); display:flex; justify-content:flex-end;">
+                                    <button type="submit" class="btn-primary" style="width:auto; padding:var(--space-2) var(--space-8);">Save Changes</button>
+                                </div>
                             </form>
                         </div>
                     </div>
 
-                    <!-- Security Card -->
+                    <!-- ── Security Card ── -->
                     <div class="settings-card">
-                        <div class="settings-card-header">
-                            <h3>Security</h3>
-                            <p>Ensure your account is using a long, random password to stay secure.</p>
+                        <div class="settings-card-header" style="display:flex; align-items:center; gap:var(--space-4);">
+                            <div style="width:36px; height:36px; background:var(--amber-50); border:1.5px solid var(--amber-100); border-radius:var(--radius-lg); display:flex; align-items:center; justify-content:center; color:var(--amber-600); flex-shrink:0;">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" style="width:18px;height:18px;"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z" /></svg>
+                            </div>
+                            <div>
+                                <h3>Change Password</h3>
+                                <p>Use a long, random password to keep your account secure.</p>
+                            </div>
                         </div>
                         <div class="settings-card-body">
-                            <form action="../handlers/settings_password_handler.php" method="POST">
+                            <form action="../handlers/settings_password_handler.php" method="POST" id="pw-form" onsubmit="return validatePwForm()">
+
+                                <!-- Current Password -->
                                 <div class="form-group">
-                                    <label for="current_password">Current Password</label>
-                                    <input type="password" id="current_password" name="current_password" required>
+                                    <label class="form-label" for="current_password">Current Password</label>
+                                    <div class="input-wrapper" style="position:relative;">
+                                        <span class="input-icon">
+                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z" /></svg>
+                                        </span>
+                                        <input type="password" class="form-input" id="current_password" name="current_password" placeholder="Enter current password" required>
+                                        <button type="button" class="password-toggle" onclick="toggleField('current_password')" tabindex="-1">
+                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" style="width:17px;height:17px;"><path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" /></svg>
+                                        </button>
+                                    </div>
                                 </div>
 
+                                <!-- New Password -->
                                 <div class="form-group">
-                                    <label for="new_password">New Password</label>
-                                    <input type="password" id="new_password" name="new_password" required minlength="8" class="pwd-input">
+                                    <label class="form-label" for="new_password">New Password</label>
+                                    <div class="input-wrapper" style="position:relative;">
+                                        <span class="input-icon">
+                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 5.25a3 3 0 0 1 3 3m3 0a6 6 0 0 1-7.029 5.912c-.563-.097-1.159.026-1.563.43L10.5 17.25H8.25v2.25H6v2.25H2.25v-2.818c0-.597.237-1.17.659-1.591l6.499-6.499c.404-.404.527-1 .43-1.563A6 6 0 1 1 21.75 8.25Z" /></svg>
+                                        </span>
+                                        <input type="password" class="form-input" id="new_password" name="new_password"
+                                               placeholder="Min. 8 characters" required minlength="8">
+                                        <button type="button" class="password-toggle" onclick="toggleField('new_password')" tabindex="-1">
+                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" style="width:17px;height:17px;"><path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" /></svg>
+                                        </button>
+                                    </div>
+                                    <span class="field-error" id="err-new-pw"></span>
                                 </div>
 
+                                <!-- Confirm Password -->
                                 <div class="form-group">
-                                    <label for="confirm_password">Confirm New Password</label>
-                                    <input type="password" id="confirm_password" name="confirm_password" required minlength="8">
+                                    <label class="form-label" for="confirm_password">Confirm New Password</label>
+                                    <div class="input-wrapper" style="position:relative;">
+                                        <span class="input-icon">
+                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75m-3-7.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285Z" /></svg>
+                                        </span>
+                                        <input type="password" class="form-input" id="confirm_password" name="confirm_password"
+                                               placeholder="Repeat new password" required minlength="8">
+                                        <button type="button" class="password-toggle" onclick="toggleField('confirm_password')" tabindex="-1">
+                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" style="width:17px;height:17px;"><path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" /></svg>
+                                        </button>
+                                    </div>
+                                    <span class="field-error" id="err-confirm-pw"></span>
                                 </div>
 
-                                <button type="submit" class="btn-primary" style="margin-top: var(--space-4);">Update Password</button>
+                                <div style="border-top:1px solid var(--slate-100); margin-top:var(--space-6); padding-top:var(--space-5); display:flex; justify-content:flex-end;">
+                                    <button type="submit" class="btn-primary" style="width:auto; padding:var(--space-2) var(--space-8);">Update Password</button>
+                                </div>
                             </form>
                         </div>
                     </div>
-                </div>
+
+                </div><!-- /settings-grid --> </div>
             </div>
         </main>
     </div>
 
     <script>
-        // Avatar upload preview logic
+        // ── Avatar upload preview ────────────────────────────────
         const avatarInput = document.getElementById('avatar-input');
         const avatarPreview = document.getElementById('avatar-preview');
-        
+
         avatarInput.addEventListener('change', function() {
             const file = this.files[0];
             if (file) {
                 const reader = new FileReader();
                 reader.onload = function(e) {
-                    // Check if it's currently a div (initials) or an image
                     if (avatarPreview.tagName.toLowerCase() === 'div') {
                         const img = document.createElement('img');
                         img.id = 'avatar-preview';
@@ -241,12 +315,38 @@ $flash = getFlash();
                     } else {
                         avatarPreview.src = e.target.result;
                     }
-                }
+                };
                 reader.readAsDataURL(file);
             }
         });
 
-        // Auto dismiss flash alerts
+        // ── Show / hide password toggle ──────────────────────────
+        function toggleField(id) {
+            const input = document.getElementById(id);
+            input.type = input.type === 'password' ? 'text' : 'password';
+        }
+
+        // ── Password form client-side validation ─────────────────
+        function validatePwForm() {
+            const newPw  = document.getElementById('new_password').value;
+            const confPw = document.getElementById('confirm_password').value;
+            const errNew  = document.getElementById('err-new-pw');
+            const errConf = document.getElementById('err-confirm-pw');
+            errNew.textContent = '';
+            errConf.textContent = '';
+            let ok = true;
+            if (newPw.length < 8) {
+                errNew.textContent = 'Password must be at least 8 characters.';
+                ok = false;
+            }
+            if (newPw !== confPw) {
+                errConf.textContent = 'Passwords do not match.';
+                ok = false;
+            }
+            return ok;
+        }
+
+        // ── Auto-dismiss flash alert ─────────────────────────────
         const flash = document.querySelector('.alert');
         if (flash) {
             setTimeout(() => {
