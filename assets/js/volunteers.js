@@ -62,6 +62,7 @@ function openEditModal(v) {
     clearValidation();
     
     document.getElementById('f-fname').value       = v.first_name   ?? '';
+    document.getElementById('f-mname').value       = v.middle_name  ?? '';
     document.getElementById('f-lname').value       = v.last_name    ?? '';
     document.getElementById('f-email').value       = v.email        ?? '';
     document.getElementById('f-contact').value     = v.contact_number ?? '';

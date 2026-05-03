@@ -1161,6 +1161,14 @@ img { max-width: 100%; display: block; }
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: var(--space-4);
+    align-items: end;
+}
+
+.form-row-3 {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: var(--space-4);
+    align-items: end;
 }
 
 .form-select {
@@ -1248,7 +1256,7 @@ img { max-width: 100%; display: block; }
 .auth-switch-link:hover { color: var(--green-700); }
 
 @media (max-width: 480px) {
-    .form-row { grid-template-columns: 1fr; }
+    .form-row, .form-row-3 { grid-template-columns: 1fr; }
 }
 
 /* ============================================

@@ -81,6 +81,21 @@ function statusBadge(string $status): string {
     return '<span class="event-badge ' . $b['class'] . '">' . $b['label'] . '</span>';
 }
 
+/**
+ * Compute real-time status from event dates/times.
+ * Returns 'cancelled' unchanged; otherwise derives upcoming/ongoing/completed.
+ */
+function computeStatus(string $eventDate, ?string $endEventDate, string $startTime, string $endTime, string $savedStatus): string {
+    if ($savedStatus === 'cancelled') return 'cancelled';
+    $now       = new DateTime();
+    $startDt   = new DateTime($eventDate . ' ' . $startTime);
+    $endDtDate = $endEventDate ?? $eventDate;
+    $endDt     = new DateTime($endDtDate . ' ' . $endTime);
+    if ($now < $startDt)                         return 'upcoming';
+    if ($now >= $startDt && $now <= $endDt)      return 'ongoing';
+    return 'completed';
+}
+
 function canAdmin(array $user): bool {
     return in_array($user['role'], ['admin', 'coordinator']);
 }
@@ -293,13 +308,19 @@ function canAdmin(array $user): bool {
             <div class="oe-grid">
                 <?php foreach ($events as $ev): ?>
                 <?php
-                    $isPast     = strtotime($ev['event_date']) < strtotime('today');
-                    $dateLabel  = date('M j, Y', strtotime($ev['event_date']));
-                    $timeLabel  = date('g:i A', strtotime($ev['start_time'])) . ' – ' . date('g:i A', strtotime($ev['end_time']));
+                    $isPast         = strtotime($ev['event_date']) < strtotime('today');
+                    $startDateLabel = date('M j, Y', strtotime($ev['event_date']));
+                    $endDate        = !empty($ev['end_event_date']) ? $ev['end_event_date'] : null;
+                    $dateLabel      = $endDate
+                        ? $startDateLabel . ' – ' . date('M j, Y', strtotime($endDate))
+                        : $startDateLabel;
+                    $timeLabel      = date('g:i A', strtotime($ev['start_time'])) . ' – ' . date('g:i A', strtotime($ev['end_time']));
+                    // Always show real-time computed status
+                    $liveStatus     = computeStatus($ev['event_date'], $ev['end_event_date'] ?? null, $ev['start_time'], $ev['end_time'], $ev['status']);
                 ?>
                 <div class="oe-card" id="event-card-<?php echo $ev['id']; ?>">
                     <div class="oe-card-header">
-                        <?php echo statusBadge($ev['status']); ?>
+                        <?php echo statusBadge($liveStatus); ?>
                         <?php if (canAdmin($user)): ?>
                         <div class="oe-card-actions">
                             <button class="oe-action-btn" title="Edit event"
@@ -386,6 +407,7 @@ function canAdmin(array $user): bool {
                 <div class="form-group">
                     <label class="form-label" for="f-description">Description</label>
                     <textarea class="form-input form-textarea modal-input" id="f-description" name="description" placeholder="Brief description of this event…" rows="3"></textarea>
+                    <span class="field-error" id="err-description"></span>
                 </div>
                 <div class="form-row">
                     <div class="form-group">
@@ -401,19 +423,24 @@ function canAdmin(array $user): bool {
                 </div>
                 <div class="form-row">
                     <div class="form-group">
-                        <label class="form-label" for="f-date">Event Date <span class="req">*</span></label>
+                        <label class="form-label" for="f-date">Start Date <span class="req">*</span></label>
                         <input type="date" class="form-input modal-input" id="f-date" name="event_date" required max="9999-12-31">
                         <span class="field-error" id="err-date"></span>
                     </div>
                     <div class="form-group">
-                        <label class="form-label" for="f-status">Status <span class="req">*</span></label>
-                        <select class="form-input form-select modal-input" id="f-status" name="status" required>
-                            <option value="upcoming">Upcoming</option>
-                            <option value="ongoing">Ongoing</option>
-                            <option value="completed">Completed</option>
-                            <option value="cancelled">Cancelled</option>
-                        </select>
+                        <label class="form-label" for="f-end-date">End Date <span style="font-weight:400;color:var(--slate-400)">(optional)</span></label>
+                        <input type="date" class="form-input modal-input" id="f-end-date" name="end_event_date" max="9999-12-31">
+                        <span class="field-error" id="err-end-date"></span>
                     </div>
+                </div>
+                <!-- Status is computed automatically; only allow marking as cancelled -->
+                <div class="form-group" style="margin-top:var(--space-2);">
+                    <label style="display:flex; align-items:center; gap:10px; cursor:pointer; padding:var(--space-3) var(--space-4); background:var(--slate-50); border:1.5px solid var(--slate-200); border-radius:var(--radius-md); transition:all 0.2s;" id="cancel-label">
+                        <input type="checkbox" id="f-cancelled" name="is_cancelled" value="1"
+                               style="width:16px;height:16px;accent-color:var(--rose-600);cursor:pointer;">
+                        <span style="font-size:0.85rem; font-weight:600; color:var(--slate-600);">Mark as Cancelled</span>
+                        <span style="font-size:0.78rem; color:var(--slate-400); margin-left:auto;">Status is otherwise automatic</span>
+                    </label>
                 </div>
                 <div class="form-row">
                     <div class="form-group">

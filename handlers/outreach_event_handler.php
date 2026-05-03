@@ -29,11 +29,11 @@ $redirect = '/Medical Outreach Tracker/pages/outreach_events.php';
 // ── Helper: validate & sanitise ───────────────────────────────────────────────
 function sanitiseEvent(array $post): array|false
 {
-    $title      = trim($post['title'] ?? '');
-    $desc       = trim($post['description'] ?? '');
+    $title        = trim($post['title'] ?? '');
+    $desc         = trim($post['description'] ?? '');
     $barangayCity = trim($post['barangay_city'] ?? '');
-    $venue      = trim($post['venue'] ?? '');
-    $location   = trim($post['location'] ?? '');
+    $venue        = trim($post['venue'] ?? '');
+    $location     = '';
 
     if ($barangayCity && $venue) {
         $location = $barangayCity . ' | ' . $venue;
@@ -42,54 +42,71 @@ function sanitiseEvent(array $post): array|false
     } elseif ($venue) {
         $location = $venue;
     }
-    $eventDate  = trim($post['event_date'] ?? '');
-    $startTime  = trim($post['start_time'] ?? '');
-    $endTime    = trim($post['end_time'] ?? '');
-    $status     = trim($post['status'] ?? 'upcoming');
-    $maxVols    = isset($post['max_volunteers']) && $post['max_volunteers'] !== ''
-                    ? (int)$post['max_volunteers'] : null;
 
-    $validStatuses = ['upcoming', 'ongoing', 'completed', 'cancelled'];
+    $eventDate    = trim($post['event_date'] ?? '');
+    $endEventDate = trim($post['end_event_date'] ?? '');
+    $startTime    = trim($post['start_time'] ?? '');
+    $endTime      = trim($post['end_time'] ?? '');
+    $isCancelled  = !empty($post['is_cancelled']); // checkbox
+    $maxVols      = isset($post['max_volunteers']) && $post['max_volunteers'] !== ''
+                    ? (int)$post['max_volunteers'] : null;
 
     if (!$title || !$location || !$eventDate || !$startTime || !$endTime) {
         return false;
     }
-    if (!in_array($status, $validStatuses)) $status = 'upcoming';
     if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $eventDate)) return false;
     if (!preg_match('/^\d{2}:\d{2}(:\d{2})?$/', $startTime)) return false;
     if (!preg_match('/^\d{2}:\d{2}(:\d{2})?$/', $endTime))   return false;
 
-    return compact('title', 'desc', 'location', 'eventDate', 'startTime', 'endTime', 'status', 'maxVols');
+    // Validate end event date if provided
+    if ($endEventDate !== '') {
+        if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $endEventDate)) return false;
+        if ($endEventDate < $eventDate) return false;
+    } else {
+        $endEventDate = null;
+    }
+
+    return compact('title', 'desc', 'location', 'eventDate', 'endEventDate', 'startTime', 'endTime', 'isCancelled', 'maxVols');
+}
+
+/**
+ * Compute status automatically from event date/time.
+ * Returns 'cancelled' if the checkbox was ticked.
+ */
+function computeStatus(array $data): string {
+    if ($data['isCancelled']) return 'cancelled';
+    $now      = new DateTime();
+    $startDt  = new DateTime($data['eventDate'] . ' ' . $data['startTime']);
+    $endDtDate = $data['endEventDate'] ?? $data['eventDate'];
+    $endDt    = new DateTime($endDtDate . ' ' . $data['endTime']);
+    if ($now < $startDt)                        return 'upcoming';
+    if ($now >= $startDt && $now <= $endDt)     return 'ongoing';
+    return 'completed';
 }
 
 
 // ── CREATE ────────────────────────────────────────────────────────────────────
 if ($action === 'create') {
-    $data = sanitiseEvent($_POST);
+    $data   = sanitiseEvent($_POST);
     if (!$data) {
         setFlash('error', 'Please fill in all required fields correctly.');
         header("Location: {$redirect}");
         exit();
     }
 
-    $today = date('Y-m-d');
-    if ($data['eventDate'] < $today) {
-        setFlash('error', 'Event date must be today or in the future.');
-        header("Location: {$redirect}");
-        exit();
-    }
+    $status = computeStatus($data);
 
     $stmt = $conn->prepare(
         "INSERT INTO outreach_events
-         (title, description, location, event_date, start_time, end_time, status, max_volunteers, created_by)
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)"
+         (title, description, location, event_date, end_event_date, start_time, end_time, status, max_volunteers, created_by)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
     );
 
     $stmt->bind_param(
-        "sssssssii",
+        "ssssssssii",
         $data['title'], $data['desc'], $data['location'],
-        $data['eventDate'], $data['startTime'], $data['endTime'],
-        $data['status'], $data['maxVols'], $user['id']
+        $data['eventDate'], $data['endEventDate'], $data['startTime'], $data['endTime'],
+        $status, $data['maxVols'], $user['id']
     );
 
     if ($stmt->execute()) {
@@ -110,6 +127,8 @@ if ($action === 'create') {
         exit();
     }
 
+    $status = computeStatus($data);
+
     // Verify event exists
     $check = $conn->prepare("SELECT id FROM outreach_events WHERE id = ?");
     $check->bind_param('i', $eventId);
@@ -123,16 +142,16 @@ if ($action === 'create') {
 
     $stmt = $conn->prepare(
         "UPDATE outreach_events
-         SET title=?, description=?, location=?, event_date=?, start_time=?, end_time=?,
-             status=?, max_volunteers=?
+         SET title=?, description=?, location=?, event_date=?, end_event_date=?,
+             start_time=?, end_time=?, status=?, max_volunteers=?
          WHERE id=?"
     );
 
     $stmt->bind_param(
-        "sssssssii",
+        "ssssssssii",
         $data['title'], $data['desc'], $data['location'],
-        $data['eventDate'], $data['startTime'], $data['endTime'],
-        $data['status'], $data['maxVols'], $eventId
+        $data['eventDate'], $data['endEventDate'], $data['startTime'], $data['endTime'],
+        $status, $data['maxVols'], $eventId
     );
 
     if ($stmt->execute()) {

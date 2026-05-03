@@ -13,10 +13,10 @@ function openCreateModal() {
     document.getElementById('form-action').value   = 'create';
     document.getElementById('form-event-id').value = '';
     document.getElementById('event-form').reset();
-    document.getElementById('f-status').value = 'upcoming';
+    document.getElementById('f-cancelled').checked = false;
+    updateCancelLabel();
     clearValidation();
     openModal(eventModal);
-    // Focus first field for accessibility
     setTimeout(() => document.getElementById('f-title').focus(), 80);
 }
 
@@ -36,13 +36,15 @@ function openEditModal(ev) {
         venueStr = parts.slice(1).join(' | ');
     }
     document.getElementById('f-barangay-city').value = bCity;
-    document.getElementById('f-venue').value = venueStr;
-    document.getElementById('f-date').value        = ev.event_date   ?? '';
-    document.getElementById('f-start').value       = (ev.start_time  ?? '').slice(0, 5);
-    document.getElementById('f-end').value         = (ev.end_time    ?? '').slice(0, 5);
-    document.getElementById('f-status').value      = ev.status       ?? 'upcoming';
-    document.getElementById('f-volunteers').value  = ev.max_volunteers ?? '';
+    document.getElementById('f-venue').value      = venueStr;
+    document.getElementById('f-date').value       = ev.event_date      ?? '';
+    document.getElementById('f-end-date').value   = ev.end_event_date  ?? '';
+    document.getElementById('f-start').value      = (ev.start_time  ?? '').slice(0, 5);
+    document.getElementById('f-end').value        = (ev.end_time    ?? '').slice(0, 5);
+    document.getElementById('f-cancelled').checked = (ev.status === 'cancelled');
+    document.getElementById('f-volunteers').value = ev.max_volunteers ?? '';
 
+    updateCancelLabel();
     clearValidation();
     openModal(eventModal);
 }
@@ -80,8 +82,24 @@ document.addEventListener('keydown', e => {
     }
 });
 
-/* ── Client-side validation ─────────────────────────────────────────────────── */
+/* ── Cancel checkbox styling ────────────────────────────────────────────────── */
+function updateCancelLabel() {
+    const cb    = document.getElementById('f-cancelled');
+    const label = document.getElementById('cancel-label');
+    if (!cb || !label) return;
+    if (cb.checked) {
+        label.style.background    = 'var(--rose-50, #fff1f2)';
+        label.style.borderColor   = 'var(--rose-300, #fda4af)';
+        label.querySelector('span').style.color = 'var(--rose-700, #be123c)';
+    } else {
+        label.style.background    = 'var(--slate-50)';
+        label.style.borderColor   = 'var(--slate-200)';
+        label.querySelector('span').style.color = 'var(--slate-600)';
+    }
+}
+document.getElementById('f-cancelled')?.addEventListener('change', updateCancelLabel);
 
+/* ── Client-side validation ─────────────────────────────────────────────────── */
 function clearValidation() {
     document.querySelectorAll('#event-form .form-input').forEach(el => {
         el.classList.remove('input-invalid');
@@ -95,7 +113,6 @@ function showFieldError(fieldId, message) {
     const field = document.getElementById(fieldId);
     if (!field) return;
     field.classList.add('input-invalid');
-    // Look for sibling or nearby field-error element
     const errEl = field.closest('.form-group')?.querySelector('.field-error')
                 || field.parentElement?.querySelector('.field-error');
     if (errEl) errEl.textContent = message;
@@ -105,12 +122,13 @@ function validateForm() {
     clearValidation();
     let valid = true;
 
-    const title     = document.getElementById('f-title').value.trim();
-    const bCity     = document.getElementById('f-barangay-city').value.trim();
-    const venueStr  = document.getElementById('f-venue').value.trim();
-    const date      = document.getElementById('f-date').value;
-    const start     = document.getElementById('f-start').value;
-    const end       = document.getElementById('f-end').value;
+    const title      = document.getElementById('f-title').value.trim();
+    const bCity      = document.getElementById('f-barangay-city').value.trim();
+    const venueStr   = document.getElementById('f-venue').value.trim();
+    const date       = document.getElementById('f-date').value;
+    const endDate    = document.getElementById('f-end-date').value;
+    const start      = document.getElementById('f-start').value;
+    const end        = document.getElementById('f-end').value;
     const volunteers = document.getElementById('f-volunteers').value;
 
     if (!title) {
@@ -131,34 +149,37 @@ function validateForm() {
     }
 
     if (!date) {
-        showFieldError('f-date', 'Event date is required.');
+        showFieldError('f-date', 'Start date is required.');
         valid = false;
     } else {
         const action = document.getElementById('form-action').value;
         if (action === 'create') {
             const today = new Date();
-            today.setHours(0, 0, 0, 0); // normalize today to midnight
+            today.setHours(0, 0, 0, 0);
             const [y, m, d] = date.split('-');
-            const selectedDate = new Date(y, m - 1, d); // local time
+            const selectedDate = new Date(y, m - 1, d);
             selectedDate.setHours(0, 0, 0, 0);
-            
             if (selectedDate < today) {
-                showFieldError('f-date', 'Event date must be today or in the future.');
+                showFieldError('f-date', 'Start date must be today or in the future.');
                 valid = false;
             }
         }
+    }
+
+    // End date must be >= start date if provided
+    if (endDate && date && endDate < date) {
+        showFieldError('f-end-date', 'End date cannot be before the start date.');
+        valid = false;
     }
 
     if (!start) {
         showFieldError('f-start', 'Start time is required.');
         valid = false;
     }
-
     if (!end) {
         showFieldError('f-end', 'End time is required.');
         valid = false;
     }
-
     if (start && end && end <= start) {
         showFieldError('f-end', 'End time must be after start time.');
         valid = false;
@@ -178,60 +199,22 @@ document.getElementById('event-form').addEventListener('submit', function (e) {
         e.preventDefault();
         return;
     }
-    const btn = document.getElementById('modal-submit-btn');
-    btn.disabled = true;
+    document.getElementById('modal-submit-btn').disabled = true;
 });
 
 /* Clear individual field errors on input */
-['f-title', 'f-description', 'f-barangay-city', 'f-venue', 'f-date', 'f-start', 'f-end', 'f-status', 'f-volunteers'].forEach(id => {
+['f-title', 'f-description', 'f-barangay-city', 'f-venue', 'f-date', 'f-end-date', 'f-start', 'f-end', 'f-volunteers'].forEach(id => {
     const el = document.getElementById(id);
     if (el) {
-        el.addEventListener('input', () => {
-            el.classList.remove('input-invalid');
-            const errEl = el.closest('.form-group')?.querySelector('.field-error')
-                        || el.parentElement?.querySelector('.field-error');
-            if (errEl) errEl.textContent = '';
-        });
-        el.addEventListener('change', () => {
-            el.classList.remove('input-invalid');
-            const errEl = el.closest('.form-group')?.querySelector('.field-error')
-                        || el.parentElement?.querySelector('.field-error');
-            if (errEl) errEl.textContent = '';
+        ['input', 'change'].forEach(evt => {
+            el.addEventListener(evt, () => {
+                el.classList.remove('input-invalid');
+                const errEl = el.closest('.form-group')?.querySelector('.field-error')
+                            || el.parentElement?.querySelector('.field-error');
+                if (errEl) errEl.textContent = '';
+            });
         });
     }
-});
-
-/* ── Auto-update status based on date/time ──────────────────────────────────── */
-function autoUpdateStatus() {
-    const statusSelect = document.getElementById('f-status');
-    if (!statusSelect || statusSelect.value === 'cancelled') return;
-
-    const dateVal = document.getElementById('f-date').value;
-    const startVal = document.getElementById('f-start').value;
-    const endVal = document.getElementById('f-end').value;
-
-    if (!dateVal || !startVal || !endVal) return;
-
-    const [y, m, d] = dateVal.split('-');
-    const [startH, startMin] = startVal.split(':');
-    const [endH, endMin] = endVal.split(':');
-
-    const now = new Date();
-    const startTime = new Date(y, m - 1, d, startH, startMin, 0);
-    const endTime = new Date(y, m - 1, d, endH, endMin, 0);
-
-    if (now < startTime) {
-        statusSelect.value = 'upcoming';
-    } else if (now >= startTime && now <= endTime) {
-        statusSelect.value = 'ongoing';
-    } else {
-        statusSelect.value = 'completed';
-    }
-}
-
-['f-date', 'f-start', 'f-end'].forEach(id => {
-    const el = document.getElementById(id);
-    if (el) el.addEventListener('change', autoUpdateStatus);
 });
 
 /* ── Live search debounce ───────────────────────────────────────────────────── */

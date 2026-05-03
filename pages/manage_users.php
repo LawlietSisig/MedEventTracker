@@ -31,8 +31,8 @@ $conn->close();
     <link rel="stylesheet" href="../assets/css/style.css?v=<?php echo time(); ?>">
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏥</text></svg>">
     <style>
-        .mu-actions { display: flex; gap: 6px; }
-        .mu-btn { display: inline-flex; align-items: center; gap: 5px; padding: 5px 12px; border: none; border-radius: var(--radius-md); font-size: 0.78rem; font-weight: 700; font-family: var(--font-display); cursor: pointer; text-transform: uppercase; letter-spacing: 0.04em; transition: all var(--transition-fast); }
+        .mu-actions { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
+        .mu-btn { display: inline-flex; align-items: center; justify-content: center; white-space: nowrap; gap: 5px; padding: 5px 12px; border: none; border-radius: var(--radius-md); font-size: 0.78rem; font-weight: 700; font-family: var(--font-display); cursor: pointer; text-transform: uppercase; letter-spacing: 0.04em; transition: all var(--transition-fast); }
         .mu-btn-edit   { background: var(--blue-50); color: var(--blue-700); }
         .mu-btn-edit:hover { background: var(--blue-100); }
         .mu-btn-toggle { background: var(--amber-50); color: var(--amber-700); }
@@ -182,19 +182,19 @@ $conn->close();
                                 <?php else: ?>
                                 <div class="mu-actions">
                                     <!-- Reset Password -->
-                                    <button class="mu-btn mu-btn-reset"
-                                            onclick="openResetModal(<?php echo $u['id']; ?>, '<?php echo htmlspecialchars($u['first_name'] . ' ' . $u['last_name']); ?>')">
+                                    <button type="button" class="mu-btn mu-btn-reset"
+                                            onclick="openResetModal(<?php echo $u['id']; ?>, '<?php echo htmlspecialchars($u['first_name'] . ' ' . $u['last_name'], ENT_QUOTES); ?>')">
                                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 5.25a3 3 0 0 1 3 3m3 0a6 6 0 0 1-7.029 5.912c-.563-.097-1.159.026-1.563.43L10.5 17.25H8.25v2.25H6v2.25H2.25v-2.818c0-.597.237-1.17.659-1.591l6.499-6.499c.404-.404.527-1 .43-1.563A6 6 0 1 1 21.75 8.25Z" /></svg>
                                         Reset Password
                                     </button>
                                     <!-- Edit Role -->
-                                    <button class="mu-btn mu-btn-edit"
-                                            onclick="openEditModal(<?php echo $u['id']; ?>, '<?php echo htmlspecialchars($u['first_name'] . ' ' . $u['last_name']); ?>', '<?php echo $u['role']; ?>')">
+                                    <button type="button" class="mu-btn mu-btn-edit"
+                                            onclick="openEditModal(<?php echo $u['id']; ?>, '<?php echo htmlspecialchars($u['first_name'] . ' ' . $u['last_name'], ENT_QUOTES); ?>', '<?php echo $u['role']; ?>')">
                                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Z" /></svg>
                                         Edit Role
                                     </button>
                                     <!-- Toggle Status -->
-                                    <form method="POST" action="../handlers/manage_users_handler.php" style="display:inline;">
+                                    <form method="POST" action="../handlers/manage_users_handler.php" style="display:inline;" onsubmit="return confirm('Are you sure you want to <?php echo $isActive ? 'deactivate' : 'activate'; ?> this user?');">
                                         <input type="hidden" name="action" value="toggle_status">
                                         <input type="hidden" name="user_id" value="<?php echo $u['id']; ?>">
                                         <button type="submit" class="mu-btn mu-btn-toggle">
@@ -203,8 +203,8 @@ $conn->close();
                                         </button>
                                     </form>
                                     <!-- Delete -->
-                                    <button class="mu-btn mu-btn-delete"
-                                            onclick="openDeleteModal(<?php echo $u['id']; ?>, '<?php echo htmlspecialchars($u['first_name'] . ' ' . $u['last_name']); ?>')">
+                                    <button type="button" class="mu-btn mu-btn-delete"
+                                            onclick="openDeleteModal(<?php echo $u['id']; ?>, '<?php echo htmlspecialchars($u['first_name'] . ' ' . $u['last_name'], ENT_QUOTES); ?>')">
                                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" /></svg>
                                         Delete
                                     </button>
@@ -222,7 +222,7 @@ $conn->close();
 </div><!-- /dashboard-layout -->
 
 <!-- ══ Edit Role Modal ══ -->
-<div class="modal-overlay" id="editModal" style="display:none;" onclick="if(event.target===this)closeEditModal()">
+<div class="modal-overlay" id="editModal" onclick="if(event.target===this)closeEditModal()">
     <div class="modal-box modal-box-sm">
         <div class="modal-header">
             <h3 id="editModalTitle">Edit Role</h3>
@@ -233,7 +233,7 @@ $conn->close();
             <input type="hidden" name="user_id" id="editUserId">
             <div class="modal-body">
                 <div class="form-group">
-                    <label class="form-label" for="editRole">Role</label>
+                    <label class="form-label" for="editRole">New Role</label>
                     <div class="input-wrapper">
                         <select class="form-input form-select modal-input" name="role" id="editRole" required>
                             <option value="volunteer">Volunteer</option>
@@ -242,17 +242,27 @@ $conn->close();
                         </select>
                     </div>
                 </div>
+                <div class="form-group" style="margin-top:var(--space-4);">
+                    <label class="form-label" for="editAdminPassword">Admin Password <span class="req">*</span></label>
+                    <div class="input-wrapper" style="position:relative;">
+                        <input type="password" class="form-input modal-input" id="editAdminPassword"
+                               name="admin_password" placeholder="Enter your admin password" required>
+                        <button type="button" class="pw-toggle" onclick="togglePw('editAdminPassword', this)" tabindex="-1">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" /></svg>
+                        </button>
+                    </div>
+                </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn-outline" onclick="closeEditModal()">Cancel</button>
-                <button type="submit" class="btn-primary" style="width:auto; padding: var(--space-2) var(--space-6);">Save</button>
+                <button type="submit" class="btn-primary" style="width:auto; padding: var(--space-2) var(--space-6);">Save Role</button>
             </div>
         </form>
     </div>
 </div>
 
 <!-- ══ Delete Confirm Modal ══ -->
-<div class="modal-overlay" id="deleteModal" style="display:none;" onclick="if(event.target===this)closeDeleteModal()">
+<div class="modal-overlay" id="deleteModal" onclick="if(event.target===this)closeDeleteModal()">
     <div class="modal-box modal-box-sm">
         <div class="modal-header">
             <h3>Delete Account</h3>
@@ -265,9 +275,18 @@ $conn->close();
                 <div class="delete-confirm-icon">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" /></svg>
                 </div>
-                <p class="delete-confirm-text" style="text-align:center; margin-top:var(--space-4);">
+                <p class="delete-confirm-text" style="text-align:center; margin-top:var(--space-4); margin-bottom:var(--space-4);">
                     Are you sure you want to permanently delete <strong id="deleteUserName"></strong>? This action cannot be undone.
                 </p>
+                <div class="form-group" style="margin-top:var(--space-4); text-align:left;">
+                    <label class="form-label" for="adminPasswordDelete">Enter your admin password to confirm</label>
+                    <div class="input-wrapper" style="position:relative;">
+                        <input type="password" class="form-input modal-input" id="adminPasswordDelete" name="admin_password" required>
+                        <button type="button" class="pw-toggle" onclick="togglePw('adminPasswordDelete', this)" tabindex="-1">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" /></svg>
+                        </button>
+                    </div>
+                </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn-outline" onclick="closeDeleteModal()">Cancel</button>
@@ -278,7 +297,7 @@ $conn->close();
 </div>
 
 <!-- ══ Reset Password Modal ══ -->
-<div class="modal-overlay" id="resetModal" style="display:none;" onclick="if(event.target===this)closeResetModal()">
+<div class="modal-overlay" id="resetModal" onclick="if(event.target===this)closeResetModal()">
     <div class="modal-box modal-box-sm">
         <div class="modal-header">
             <h3 id="resetModalTitle">Reset Password</h3>
@@ -320,31 +339,36 @@ $conn->close();
 </div>
 
 <script>
+// ── Generic modal helpers ─────────────────────────────────────
+function openModal(id) {
+    document.getElementById(id).classList.add('modal-visible');
+}
+function closeModal(id) {
+    document.getElementById(id).classList.remove('modal-visible');
+}
+
+// ── Edit Role ─────────────────────────────────────────────────
 function openEditModal(id, name, role) {
     document.getElementById('editUserId').value = id;
     document.getElementById('editModalTitle').textContent = 'Edit Role — ' + name;
     document.getElementById('editRole').value = role;
-    const m = document.getElementById('editModal');
-    m.style.display = 'flex';
-    requestAnimationFrame(() => m.querySelector('.modal-box').classList.add('open'));
+    document.getElementById('editAdminPassword').value = '';
+    openModal('editModal');
+    setTimeout(() => document.getElementById('editAdminPassword').focus(), 250);
 }
-function closeEditModal() {
-    const m = document.getElementById('editModal');
-    m.querySelector('.modal-box').classList.remove('open');
-    setTimeout(() => m.style.display = 'none', 220);
-}
+function closeEditModal() { closeModal('editModal'); }
+
+// ── Delete ────────────────────────────────────────────────────
 function openDeleteModal(id, name) {
     document.getElementById('deleteUserId').value = id;
     document.getElementById('deleteUserName').textContent = name;
-    const m = document.getElementById('deleteModal');
-    m.style.display = 'flex';
-    requestAnimationFrame(() => m.querySelector('.modal-box').classList.add('open'));
+    document.getElementById('adminPasswordDelete').value = '';
+    openModal('deleteModal');
+    setTimeout(() => document.getElementById('adminPasswordDelete').focus(), 250);
 }
-function closeDeleteModal() {
-    const m = document.getElementById('deleteModal');
-    m.querySelector('.modal-box').classList.remove('open');
-    setTimeout(() => m.style.display = 'none', 220);
-}
+function closeDeleteModal() { closeModal('deleteModal'); }
+
+// ── Reset Password ────────────────────────────────────────────
 function openResetModal(id, name) {
     document.getElementById('resetUserId').value = id;
     document.getElementById('resetModalTitle').textContent = 'Reset Password — ' + name;
@@ -352,16 +376,12 @@ function openResetModal(id, name) {
     document.getElementById('confirmPassword').value = '';
     document.getElementById('resetPwError').textContent = '';
     document.getElementById('resetConfirmError').textContent = '';
-    const m = document.getElementById('resetModal');
-    m.style.display = 'flex';
-    requestAnimationFrame(() => m.querySelector('.modal-box').classList.add('open'));
+    openModal('resetModal');
     setTimeout(() => document.getElementById('newPassword').focus(), 250);
 }
-function closeResetModal() {
-    const m = document.getElementById('resetModal');
-    m.querySelector('.modal-box').classList.remove('open');
-    setTimeout(() => m.style.display = 'none', 220);
-}
+function closeResetModal() { closeModal('resetModal'); }
+
+// ── Reset password form validation ───────────────────────────
 function validateResetForm() {
     const pw  = document.getElementById('newPassword').value;
     const cpw = document.getElementById('confirmPassword').value;
@@ -378,14 +398,24 @@ function validateResetForm() {
     }
     return ok;
 }
+
+// ── Password visibility toggle ────────────────────────────────
 function togglePw(inputId, btn) {
     const input = document.getElementById(inputId);
     const isHidden = input.type === 'password';
     input.type = isHidden ? 'text' : 'password';
     btn.style.color = isHidden ? 'var(--green-600)' : 'var(--slate-400)';
 }
-const alert = document.querySelector('.alert');
-if (alert) setTimeout(() => alert.style.opacity = '0', 3500);
+
+// ── Auto-dismiss flash alert ──────────────────────────────────
+const flashAlert = document.querySelector('.alert');
+if (flashAlert) {
+    setTimeout(() => {
+        flashAlert.style.transition = 'opacity 0.5s ease';
+        flashAlert.style.opacity = '0';
+        setTimeout(() => flashAlert.remove(), 500);
+    }, 3500);
+}
 </script>
 </body>
 </html>

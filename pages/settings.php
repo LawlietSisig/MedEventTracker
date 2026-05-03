@@ -137,7 +137,7 @@ $flash = getFlash();
                     </div>
                 <?php endif; ?>
 
-                <div class="settings-grid">
+                <div class="settings-grid" style="max-width: 760px;">
                     <!-- Profile Card -->
                     <div class="settings-card">
                         <div class="settings-card-header">
@@ -171,7 +171,7 @@ $flash = getFlash();
                                 </div>
 
                                 <!-- Name row -->
-                                <div class="form-row">
+                                <div class="form-row-3">
                                     <div class="form-group">
                                         <label class="form-label" for="first_name">First Name</label>
                                         <div class="input-wrapper">
@@ -179,7 +179,17 @@ $flash = getFlash();
                                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" /></svg>
                                             </span>
                                             <input type="text" class="form-input" id="first_name" name="first_name"
-                                                   value="<?php echo htmlspecialchars($user['first_name']); ?>" required>
+                                                   value="<?php echo htmlspecialchars($user['first_name'] ?? ''); ?>" required>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label" for="middle_name">Middle Name <span style="font-size:0.75rem; color:var(--slate-400); font-weight:normal; text-transform:none;">(Optional)</span></label>
+                                        <div class="input-wrapper">
+                                            <span class="input-icon">
+                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" /></svg>
+                                            </span>
+                                            <input type="text" class="form-input" id="middle_name" name="middle_name"
+                                                   value="<?php echo htmlspecialchars($user['middle_name'] ?? ''); ?>">
                                         </div>
                                     </div>
                                     <div class="form-group">
@@ -189,7 +199,7 @@ $flash = getFlash();
                                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" /></svg>
                                             </span>
                                             <input type="text" class="form-input" id="last_name" name="last_name"
-                                                   value="<?php echo htmlspecialchars($user['last_name']); ?>" required>
+                                                   value="<?php echo htmlspecialchars($user['last_name'] ?? ''); ?>" required>
                                         </div>
                                     </div>
                                 </div>

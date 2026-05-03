@@ -21,10 +21,34 @@ try {
     
     if ($action === 'create' || $action === 'update') {
         $data = sanitisePatient($_POST);
+
+        // ── Minimum age check (13 years) ─────────────────────────────
+        if (!empty($data['dob'])) {
+            try {
+                $dob   = new DateTime($data['dob']);
+                $today = new DateTime('today');
+                $age   = $today->diff($dob)->y;
+                if ($age < 13) {
+                    setFlash('Patient must be at least 13 years old.', 'error');
+                    header('Location: ../pages/patients.php');
+                    exit();
+                }
+                // Also reject future dates
+                if ($dob > $today) {
+                    setFlash('Date of birth cannot be in the future.', 'error');
+                    header('Location: ../pages/patients.php');
+                    exit();
+                }
+            } catch (Exception $e) {
+                setFlash('Invalid date of birth provided.', 'error');
+                header('Location: ../pages/patients.php');
+                exit();
+            }
+        }
         
         if ($action === 'create') {
-            $stmt = $conn->prepare("INSERT INTO patients (first_name, last_name, dob, gender, contact_number, address, blood_type, medical_notes, created_by) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
-            $stmt->bind_param("ssssssssi", $data['first_name'], $data['last_name'], $data['dob'], $data['gender'], $data['contact_number'], $data['address'], $data['blood_type'], $data['medical_notes'], $user['id']);
+            $stmt = $conn->prepare("INSERT INTO patients (first_name, middle_name, last_name, dob, gender, contact_number, address, blood_type, medical_notes, created_by) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+            $stmt->bind_param("sssssssssi", $data['first_name'], $data['middle_name'], $data['last_name'], $data['dob'], $data['gender'], $data['contact_number'], $data['address'], $data['blood_type'], $data['medical_notes'], $user['id']);
             
             if ($stmt->execute()) {
                 setFlash('Patient successfully registered.', 'success');
@@ -35,8 +59,8 @@ try {
         } else {
             // Update
             $id = (int)$_POST['patient_id'];
-            $stmt = $conn->prepare("UPDATE patients SET first_name=?, last_name=?, dob=?, gender=?, contact_number=?, address=?, blood_type=?, medical_notes=? WHERE id=?");
-            $stmt->bind_param("ssssssssi", $data['first_name'], $data['last_name'], $data['dob'], $data['gender'], $data['contact_number'], $data['address'], $data['blood_type'], $data['medical_notes'], $id);
+            $stmt = $conn->prepare("UPDATE patients SET first_name=?, middle_name=?, last_name=?, dob=?, gender=?, contact_number=?, address=?, blood_type=?, medical_notes=? WHERE id=?");
+            $stmt->bind_param("sssssssssi", $data['first_name'], $data['middle_name'], $data['last_name'], $data['dob'], $data['gender'], $data['contact_number'], $data['address'], $data['blood_type'], $data['medical_notes'], $id);
             
             if ($stmt->execute()) {
                 setFlash('Patient profile updated.', 'success');
@@ -73,6 +97,7 @@ exit();
 function sanitisePatient(array $post): array {
     return [
         'first_name'     => trim($post['first_name'] ?? ''),
+        'middle_name'    => trim($post['middle_name'] ?? ''),
         'last_name'      => trim($post['last_name'] ?? ''),
         'dob'            => trim($post['dob'] ?? ''),
         'gender'         => in_array($post['gender'] ?? '', ['Male','Female','Other']) ? $post['gender'] : 'Other',

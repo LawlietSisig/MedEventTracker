@@ -29,7 +29,7 @@ function attemptLogin($email, $password) {
     $stmt->close();
     
     // Look up user
-    $stmt = $conn->prepare("SELECT id, first_name, last_name, email, password, role, is_active, avatar FROM users WHERE email = ?");
+    $stmt = $conn->prepare("SELECT id, first_name, middle_name, last_name, email, password, role, is_active, avatar FROM users WHERE email = ?");
     $stmt->bind_param("s", $email);
     $stmt->execute();
     $user = $stmt->get_result()->fetch_assoc();
@@ -63,12 +63,13 @@ function attemptLogin($email, $password) {
     $stmt->close();
     
     // Set session
-    $_SESSION['user_id']    = $user['id'];
-    $_SESSION['first_name'] = $user['first_name'];
-    $_SESSION['last_name']  = $user['last_name'];
-    $_SESSION['email']      = $user['email'];
-    $_SESSION['role']       = $user['role'];
-    $_SESSION['avatar']     = $user['avatar'] ?? null;
+    $_SESSION['user_id']     = $user['id'];
+    $_SESSION['first_name']  = $user['first_name'];
+    $_SESSION['middle_name'] = $user['middle_name'] ?? null;
+    $_SESSION['last_name']   = $user['last_name'];
+    $_SESSION['email']       = $user['email'];
+    $_SESSION['role']        = $user['role'];
+    $_SESSION['avatar']      = $user['avatar'] ?? null;
     
     // Regenerate session ID for security
     session_regenerate_id(true);

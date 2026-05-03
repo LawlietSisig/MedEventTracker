@@ -17,9 +17,10 @@ $user = getCurrentUser();
 $userId = $user['id'];
 
 // Get POST data
-$firstName = trim($_POST['first_name'] ?? '');
-$lastName  = trim($_POST['last_name'] ?? '');
-$email     = trim(strtolower($_POST['email'] ?? ''));
+$firstName  = trim($_POST['first_name'] ?? '');
+$middleName = trim($_POST['middle_name'] ?? '');
+$lastName   = trim($_POST['last_name'] ?? '');
+$email      = trim(strtolower($_POST['email'] ?? ''));
 
 // ── Validation ───────────────────────────────────────────────────────────────
 if (empty($firstName) || empty($lastName) || empty($email)) {
@@ -106,15 +107,16 @@ if (isset($_FILES['avatar']) && $_FILES['avatar']['error'] !== UPLOAD_ERR_NO_FIL
 }
 
 // ── Update Database ──────────────────────────────────────────────────────────
-$stmt = $conn->prepare("UPDATE users SET first_name = ?, last_name = ?, email = ?, avatar = ? WHERE id = ?");
-$stmt->bind_param("ssssi", $firstName, $lastName, $email, $avatarPath, $userId);
+$stmt = $conn->prepare("UPDATE users SET first_name = ?, middle_name = ?, last_name = ?, email = ?, avatar = ? WHERE id = ?");
+$stmt->bind_param("sssssi", $firstName, $middleName, $lastName, $email, $avatarPath, $userId);
 
 if ($stmt->execute()) {
     // Update session data so UI updates immediately
-    $_SESSION['first_name'] = $firstName;
-    $_SESSION['last_name']  = $lastName;
-    $_SESSION['email']      = $email;
-    $_SESSION['avatar']     = $avatarPath;
+    $_SESSION['first_name']  = $firstName;
+    $_SESSION['middle_name'] = $middleName;
+    $_SESSION['last_name']   = $lastName;
+    $_SESSION['email']       = $email;
+    $_SESSION['avatar']      = $avatarPath;
 
     setFlash('success', 'Profile updated successfully.');
 } else {

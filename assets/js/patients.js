@@ -64,6 +64,7 @@ function openEditModal(p) {
     clearValidation();
     
     document.getElementById('f-fname').value       = p.first_name   ?? '';
+    document.getElementById('f-mname').value       = p.middle_name  ?? '';
     document.getElementById('f-lname').value       = p.last_name    ?? '';
     document.getElementById('f-dob').value         = p.dob          ?? '';
     document.getElementById('f-gender').value      = p.gender       ?? 'Other';
@@ -114,13 +115,26 @@ function validateForm() {
         valid = false;
     }
 
-    // Basic date check (cannot be in the future)
+    // Age checks: must not be in the future AND must be at least 13 years old
     if (dob) {
         const selectedDate = new Date(dob);
-        const now = new Date();
-        if (selectedDate > now) {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        if (selectedDate > today) {
             showFieldError('f-dob', 'Date of birth cannot be in the future.');
             valid = false;
+        } else {
+            // Calculate age
+            let age = today.getFullYear() - selectedDate.getFullYear();
+            const monthDiff = today.getMonth() - selectedDate.getMonth();
+            if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < selectedDate.getDate())) {
+                age--;
+            }
+            if (age < 13) {
+                showFieldError('f-dob', 'Patient must be at least 13 years old.');
+                valid = false;
+            }
         }
     }
     

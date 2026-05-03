@@ -213,7 +213,7 @@ function canAdmin(array $user): bool {
                 </form>
 
                 <?php if (canAdmin($user)): ?>
-                <button class="btn-primary" id="btn-open-create" onclick="openCreateModal()" style="display:flex; align-items:center; gap:8px;">
+                <button class="btn-primary" id="btn-open-create" onclick="openCreateModal()" style="display:flex; align-items:center; gap:8px; width:auto;">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" style="width:18px;height:18px;">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
                     </svg>
@@ -306,11 +306,16 @@ function canAdmin(array $user): bool {
                 <input type="hidden" name="action" id="form-action" value="create">
                 <input type="hidden" name="volunteer_id" id="form-volunteer-id" value="">
                 <div class="modal-body">
-                    <div class="form-row">
+                    <div class="form-row-3">
                         <div class="form-group">
                             <label class="form-label" for="f-fname">First Name <span class="req">*</span></label>
                             <input type="text" class="form-input modal-input" id="f-fname" name="first_name" required maxlength="100">
                             <span class="field-error" id="err-fname"></span>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="f-mname">Middle Name <span style="font-size:0.75rem; color:var(--slate-400); font-weight:normal; text-transform:none;">(Optional)</span></label>
+                            <input type="text" class="form-input modal-input" id="f-mname" name="middle_name" maxlength="100">
+                            <span class="field-error" id="err-mname"></span>
                         </div>
                         <div class="form-group">
                             <label class="form-label" for="f-lname">Last Name <span class="req">*</span></label>
@@ -341,10 +346,12 @@ function canAdmin(array $user): bool {
                             <option value="active">Active</option>
                             <option value="inactive">Inactive</option>
                         </select>
+                        <span class="field-error" id="err-status"></span>
                     </div>
                     <div class="form-group">
                         <label class="form-label" for="f-notes">Skills / Notes</label>
                         <textarea class="form-input form-textarea modal-input" id="f-notes" name="skills_notes" rows="3" placeholder="Special certifications, availability, etc."></textarea>
+                        <span class="field-error" id="err-notes"></span>
                     </div>
                 </div>
                 <div class="modal-footer">

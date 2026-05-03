@@ -1,20 +1,20 @@
 <?php
 require_once __DIR__ . '/config/database.php';
-
 $conn = getConnection();
 
-// Check if middle_name column exists
-$result = $conn->query("SHOW COLUMNS FROM users LIKE 'middle_name'");
-if ($result->num_rows == 0) {
-    // Add middle_name column
-    $conn->query("ALTER TABLE users ADD COLUMN middle_name VARCHAR(100) NULL AFTER first_name");
-    echo "Added middle_name column to users table.\n";
-} else {
-    echo "middle_name column already exists in users table.\n";
-}
+$sql = "CREATE TABLE IF NOT EXISTS `password_resets` (
+    `id`         INT AUTO_INCREMENT PRIMARY KEY,
+    `email`      VARCHAR(255) NOT NULL,
+    `token`      VARCHAR(64) NOT NULL UNIQUE,
+    `expires_at` DATETIME NOT NULL,
+    `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    INDEX `idx_email` (`email`),
+    INDEX `idx_token` (`token`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci";
 
-// Describe the table
-$res = $conn->query("DESCRIBE users");
-while ($row = $res->fetch_assoc()) {
-    echo $row['Field'] . " - " . $row['Type'] . "\n";
+if ($conn->query($sql)) {
+    echo "✅ password_resets table created (or already exists).";
+} else {
+    echo "❌ Error: " . $conn->error;
 }
+$conn->close();

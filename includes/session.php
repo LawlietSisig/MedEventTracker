@@ -42,12 +42,13 @@ function getCurrentUser() {
     if (!isLoggedIn()) return null;
     
     return [
-        'id'         => $_SESSION['user_id'],
-        'first_name' => $_SESSION['first_name'],
-        'last_name'  => $_SESSION['last_name'],
-        'email'      => $_SESSION['email'],
-        'role'       => $_SESSION['role'],
-        'avatar'     => $_SESSION['avatar'] ?? null,
+        'id'          => $_SESSION['user_id'],
+        'first_name'  => $_SESSION['first_name'],
+        'middle_name' => $_SESSION['middle_name'] ?? null,
+        'last_name'   => $_SESSION['last_name'],
+        'email'       => $_SESSION['email'],
+        'role'        => $_SESSION['role'],
+        'avatar'      => $_SESSION['avatar'] ?? null,
     ];
 }
 

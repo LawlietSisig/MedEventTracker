@@ -45,11 +45,27 @@ switch ($action) {
     // ── Edit Role ─────────────────────────────────────────────
     case 'edit_role':
         $role = $_POST['role'] ?? '';
+        $adminPassword = $_POST['admin_password'] ?? '';
         $allowed = ['volunteer', 'coordinator', 'admin'];
+
         if (!in_array($role, $allowed, true)) {
             setFlash('error', 'Invalid role selected.');
             break;
         }
+
+        // Verify admin password before applying the change
+        $stmt = $conn->prepare("SELECT password FROM users WHERE id = ?");
+        $stmt->bind_param("i", $currentUser['id']);
+        $stmt->execute();
+        $res = $stmt->get_result();
+        $adminData = $res->fetch_assoc();
+        $stmt->close();
+
+        if (!$adminData || !password_verify($adminPassword, $adminData['password'])) {
+            setFlash('error', 'Incorrect admin password. Role change cancelled.');
+            break;
+        }
+
         $stmt = $conn->prepare("UPDATE users SET role = ? WHERE id = ?");
         $stmt->bind_param("si", $role, $userId);
         if ($stmt->execute()) {
@@ -98,6 +114,21 @@ switch ($action) {
 
     // ── Delete User ────────────────────────────────────────────
     case 'delete_user':
+        $adminPassword = $_POST['admin_password'] ?? '';
+        $adminId = $currentUser['id'];
+        
+        $stmt = $conn->prepare("SELECT password FROM users WHERE id = ?");
+        $stmt->bind_param("i", $adminId);
+        $stmt->execute();
+        $res = $stmt->get_result();
+        $adminData = $res->fetch_assoc();
+        $stmt->close();
+
+        if (!$adminData || !password_verify($adminPassword, $adminData['password'])) {
+            setFlash('error', 'Incorrect admin password. Deletion cancelled.');
+            break;
+        }
+
         $stmt = $conn->prepare("DELETE FROM users WHERE id = ?");
         $stmt->bind_param("i", $userId);
         if ($stmt->execute()) {
