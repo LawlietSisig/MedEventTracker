@@ -179,6 +179,14 @@ $chartData = [
                     <h2>Reports & Analytics</h2>
                     <p>Overview of system performance and data trends</p>
                 </div>
+                <div class="top-bar-right">
+                    <button class="btn-outline-icon" id="btn-print-report" onclick="window.print()" title="Print this page">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M6.72 13.829c-.24.03-.48.062-.72.096m.72-.096a42.415 42.415 0 0 1 10.56 0m-10.56 0L6.34 18m10.94-4.171c.24.03.48.062.72.096m-.72-.096L17.66 18m0 0 .229 2.523a1.125 1.125 0 0 1-1.12 1.227H7.231c-.662 0-1.18-.568-1.12-1.227L6.34 18m11.318 0h1.091A2.25 2.25 0 0 0 21 15.75V9.456c0-1.081-.768-2.015-1.837-2.175a48.055 48.055 0 0 0-1.913-.247M6.34 18H5.25A2.25 2.25 0 0 1 3 15.75V9.456c0-1.081.768-2.015 1.837-2.175a48.056 48.056 0 0 1 1.913-.247m10.5 0a48.536 48.536 0 0 0-10.5 0m10.5 0V3.375c0-.621-.504-1.125-1.125-1.125h-8.25c-.621 0-1.125.504-1.125 1.125v3.659M18 10.5h.008v.008H18V10.5Zm-3 0h.008v.008H15V10.5Z" />
+                        </svg>
+                        Print Report
+                    </button>
+                </div>
             </div>
 
             <div class="page-content">
@@ -221,11 +229,175 @@ $chartData = [
 
                 <!-- Charts Grid -->
                 <style>
+                    /* Charts */
                     .charts-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(450px, 1fr)); gap: var(--space-6); margin-bottom: var(--space-8); }
                     .chart-container { background: white; border-radius: var(--radius-xl); border: 1.5px solid var(--slate-200); padding: var(--space-6); box-shadow: var(--shadow-sm); min-height: 350px; display: flex; flex-direction: column; }
                     .chart-title { font-family: var(--font-display); font-size: 1.1rem; font-weight: 700; color: var(--slate-800); margin-bottom: var(--space-4); display: flex; align-items: center; gap: 10px; }
                     .chart-canvas-wrapper { flex: 1; position: relative; }
                     @media (max-width: 600px) { .charts-grid { grid-template-columns: 1fr; } }
+
+                    /* Download Section */
+                    .download-section { margin-bottom: var(--space-8); }
+                    .download-section-title {
+                        font-family: var(--font-display);
+                        font-size: 1.15rem;
+                        font-weight: 700;
+                        color: var(--slate-800);
+                        margin-bottom: var(--space-5);
+                        display: flex;
+                        align-items: center;
+                        gap: var(--space-3);
+                    }
+                    .download-section-title svg {
+                        width: 20px; height: 20px;
+                        color: var(--primary-600);
+                    }
+                    .download-grid {
+                        display: grid;
+                        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+                        gap: var(--space-5);
+                    }
+                    .download-card {
+                        background: white;
+                        border-radius: var(--radius-xl);
+                        border: 1.5px solid var(--slate-200);
+                        padding: var(--space-6);
+                        box-shadow: var(--shadow-sm);
+                        display: flex;
+                        flex-direction: column;
+                        gap: var(--space-4);
+                        transition: box-shadow var(--transition-base), border-color var(--transition-base), transform var(--transition-base);
+                        position: relative;
+                        overflow: hidden;
+                    }
+                    .download-card::before {
+                        content: '';
+                        position: absolute;
+                        top: 0; left: 0; right: 0;
+                        height: 3px;
+                        border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+                    }
+                    .download-card.dc-events::before   { background: linear-gradient(90deg, #3b82f6, #60a5fa); }
+                    .download-card.dc-patients::before { background: linear-gradient(90deg, var(--primary-500), var(--primary-400)); }
+                    .download-card.dc-volunteers::before { background: linear-gradient(90deg, #22c55e, #4ade80); }
+                    .download-card.dc-summary::before  { background: linear-gradient(90deg, #8b5cf6, #a78bfa); }
+                    .download-card:hover {
+                        border-color: var(--slate-300);
+                        box-shadow: var(--shadow-md);
+                        transform: translateY(-2px);
+                    }
+                    .download-card-icon {
+                        width: 44px; height: 44px;
+                        border-radius: var(--radius-lg);
+                        display: flex; align-items: center; justify-content: center;
+                        flex-shrink: 0;
+                    }
+                    .download-card-icon svg { width: 22px; height: 22px; }
+                    .dc-events   .download-card-icon { background: rgba(59,130,246,0.1);  color: #2563eb; }
+                    .dc-patients .download-card-icon { background: rgba(27,122,77,0.1);   color: var(--primary-600); }
+                    .dc-volunteers .download-card-icon { background: rgba(34,197,94,0.1); color: #16a34a; }
+                    .dc-summary  .download-card-icon { background: rgba(139,92,246,0.1);  color: #7c3aed; }
+                    .download-card-info { flex: 1; }
+                    .download-card-info h4 {
+                        font-family: var(--font-display);
+                        font-size: 1rem;
+                        font-weight: 700;
+                        color: var(--slate-800);
+                        margin-bottom: 4px;
+                    }
+                    .download-card-info p {
+                        font-size: 0.82rem;
+                        color: var(--slate-500);
+                        line-height: 1.5;
+                    }
+                    .download-card-count {
+                        font-family: var(--font-display);
+                        font-size: 1.6rem;
+                        font-weight: 800;
+                        color: var(--slate-700);
+                        line-height: 1;
+                        margin-bottom: 2px;
+                    }
+                    .download-card-count-label {
+                        font-size: 0.75rem;
+                        color: var(--slate-400);
+                        text-transform: uppercase;
+                        letter-spacing: 0.06em;
+                        font-weight: 700;
+                    }
+                    .btn-download {
+                        display: inline-flex;
+                        align-items: center;
+                        justify-content: center;
+                        gap: var(--space-2);
+                        padding: var(--space-2) var(--space-4);
+                        border-radius: var(--radius-md);
+                        font-family: var(--font-display);
+                        font-size: 0.82rem;
+                        font-weight: 700;
+                        letter-spacing: 0.03em;
+                        text-decoration: none;
+                        border: 1.5px solid transparent;
+                        cursor: pointer;
+                        transition: all var(--transition-base);
+                        width: 100%;
+                        margin-top: auto;
+                    }
+                    .btn-download svg { width: 15px; height: 15px; flex-shrink: 0; }
+                    .dc-events   .btn-download { background: #eff6ff; color: #1d4ed8; border-color: #bfdbfe; }
+                    .dc-events   .btn-download:hover { background: #2563eb; color: white; border-color: #2563eb; }
+                    .dc-patients .btn-download { background: var(--green-50); color: var(--primary-700); border-color: var(--green-200); }
+                    .dc-patients .btn-download:hover { background: var(--primary-600); color: white; border-color: var(--primary-600); }
+                    .dc-volunteers .btn-download { background: #f0fdf4; color: #15803d; border-color: #bbf7d0; }
+                    .dc-volunteers .btn-download:hover { background: #16a34a; color: white; border-color: #16a34a; }
+                    .dc-summary  .btn-download { background: #f5f3ff; color: #6d28d9; border-color: #ddd6fe; }
+                    .dc-summary  .btn-download:hover { background: #7c3aed; color: white; border-color: #7c3aed; }
+                    .dc-format-badge {
+                        display: inline-flex;
+                        align-items: center;
+                        gap: 4px;
+                        font-size: 0.7rem;
+                        font-weight: 700;
+                        text-transform: uppercase;
+                        letter-spacing: 0.08em;
+                        color: var(--slate-400);
+                        margin-bottom: var(--space-3);
+                    }
+                    .dc-format-badge span {
+                        background: var(--slate-100);
+                        border: 1px solid var(--slate-200);
+                        border-radius: var(--radius-sm);
+                        padding: 1px 6px;
+                        color: var(--slate-500);
+                    }
+                    /* Print styles */
+                    @media print {
+                        .sidebar, .top-bar .top-bar-right, .download-section { display: none !important; }
+                        .main-content { margin-left: 0 !important; padding: 1rem !important; }
+                        .chart-container { break-inside: avoid; }
+                    }
+                    /* Top bar outline icon button */
+                    .btn-outline-icon {
+                        display: inline-flex; align-items: center; gap: var(--space-2);
+                        padding: var(--space-2) var(--space-4);
+                        font-family: var(--font-display);
+                        font-size: 0.82rem; font-weight: 700;
+                        color: var(--slate-600);
+                        background: white;
+                        border: 1.5px solid var(--slate-200);
+                        border-radius: var(--radius-md);
+                        cursor: pointer;
+                        transition: all var(--transition-base);
+                        letter-spacing: 0.02em;
+                    }
+                    .btn-outline-icon svg { width: 16px; height: 16px; }
+                    .btn-outline-icon:hover { background: var(--slate-50); border-color: var(--slate-300); color: var(--slate-800); box-shadow: var(--shadow-sm); }
+                    /* PDF button */
+                    .btn-row { display: flex; gap: var(--space-2); margin-top: auto; }
+                    .btn-row .btn-download { flex: 1; margin-top: 0; }
+                    .btn-download-pdf { background: #fff1f2 !important; color: #be123c !important; border-color: #fecdd3 !important; }
+                    .btn-download-pdf:hover { background: #e11d48 !important; color: white !important; border-color: #e11d48 !important; }
+                    .dc-format-badge span + span { margin-left: 4px; }
                 </style>
                 
                 <div class="charts-grid">
@@ -273,6 +445,133 @@ $chartData = [
                         </div>
                     </div>
                 </div>
+
+                <!-- ── Download Reports Section ───────────────────────────────── -->
+                <div class="download-section">
+                    <div class="download-section-title">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" />
+                        </svg>
+                        Download Reports
+                    </div>
+
+                    <div class="download-grid">
+
+                        <!-- Events CSV -->
+                        <div class="download-card dc-events">
+                            <div class="download-card-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5" />
+                                </svg>
+                            </div>
+                            <div class="download-card-info">
+                                <div class="download-card-count"><?php echo $totalEvents; ?></div>
+                                <div class="download-card-count-label">Records</div>
+                            </div>
+                            <div>
+                                <h4>Outreach Events</h4>
+                                <p>All events with title, location, dates, status &amp; volunteer capacity.</p>
+                            </div>
+                            <div class="dc-format-badge">Format <span>CSV</span><span>PDF</span></div>
+                            <div class="btn-row">
+                                <a href="../handlers/report_export_handler.php?type=events" class="btn-download" id="btn-download-events-csv">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" /></svg>
+                                    CSV
+                                </a>
+                                <a href="../handlers/report_pdf_handler.php?type=events" class="btn-download btn-download-pdf" id="btn-download-events-pdf">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" /></svg>
+                                    PDF
+                                </a>
+                            </div>
+                        </div>
+
+                        <!-- Patients CSV -->
+                        <div class="download-card dc-patients">
+                            <div class="download-card-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 0 1 8.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0 1 11.964-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0Zm8.25 2.25a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z" />
+                                </svg>
+                            </div>
+                            <div class="download-card-info">
+                                <div class="download-card-count"><?php echo $totalPatients; ?></div>
+                                <div class="download-card-count-label">Records</div>
+                            </div>
+                            <div>
+                                <h4>Patient Records</h4>
+                                <p>Full patient list with demographics, blood type &amp; medical notes.</p>
+                            </div>
+                            <div class="dc-format-badge">Format <span>CSV</span><span>PDF</span></div>
+                            <div class="btn-row">
+                                <a href="../handlers/report_export_handler.php?type=patients" class="btn-download" id="btn-download-patients-csv">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" /></svg>
+                                    CSV
+                                </a>
+                                <a href="../handlers/report_pdf_handler.php?type=patients" class="btn-download btn-download-pdf" id="btn-download-patients-pdf">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" /></svg>
+                                    PDF
+                                </a>
+                            </div>
+                        </div>
+
+                        <!-- Volunteers CSV -->
+                        <div class="download-card dc-volunteers">
+                            <div class="download-card-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m.94 3.198.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0 1 12 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 0 1 6 18.719m12 0a5.971 5.971 0 0 0-.941-3.197m0 0A5.995 5.995 0 0 0 12 12.75a5.995 5.995 0 0 0-5.058 2.772m0 0a3 3 0 0 0-4.681 2.72 8.986 8.986 0 0 0 3.74.477m.94-3.197a5.971 5.971 0 0 0-.94 3.197M15 6.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm6 3a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Zm-13.5 0a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Z" />
+                                </svg>
+                            </div>
+                            <div class="download-card-info">
+                                <div class="download-card-count"><?php echo $totalVolunteers; ?></div>
+                                <div class="download-card-count-label">Records</div>
+                            </div>
+                            <div>
+                                <h4>Volunteer Roster</h4>
+                                <p>All volunteers with contact info, profession &amp; registration date.</p>
+                            </div>
+                            <div class="dc-format-badge">Format <span>CSV</span><span>PDF</span></div>
+                            <div class="btn-row">
+                                <a href="../handlers/report_export_handler.php?type=volunteers" class="btn-download" id="btn-download-volunteers-csv">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" /></svg>
+                                    CSV
+                                </a>
+                                <a href="../handlers/report_pdf_handler.php?type=volunteers" class="btn-download btn-download-pdf" id="btn-download-volunteers-pdf">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" /></svg>
+                                    PDF
+                                </a>
+                            </div>
+                        </div>
+
+                        <!-- Full Summary CSV -->
+                        <div class="download-card dc-summary">
+                            <div class="download-card-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" />
+                                </svg>
+                            </div>
+                            <div class="download-card-info">
+                                <div class="download-card-count" style="font-size:1.1rem; padding-top:4px;">Full Report</div>
+                                <div class="download-card-count-label">All Sections</div>
+                            </div>
+                            <div>
+                                <h4>Summary Report</h4>
+                                <p>Overview metrics, breakdowns by status, gender, age groups &amp; monthly trends.</p>
+                            </div>
+                            <div class="dc-format-badge">Format <span>CSV</span><span>PDF</span></div>
+                            <div class="btn-row">
+                                <a href="../handlers/report_export_handler.php?type=summary" class="btn-download" id="btn-download-summary-csv">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" /></svg>
+                                    CSV
+                                </a>
+                                <a href="../handlers/report_pdf_handler.php?type=summary" class="btn-download btn-download-pdf" id="btn-download-summary-pdf">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" /></svg>
+                                    PDF
+                                </a>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+                <!-- ── End Download Section ───────────────────────────────────── -->
 
             </div>
         </main>
